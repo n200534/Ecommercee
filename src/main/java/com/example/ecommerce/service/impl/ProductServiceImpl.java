@@ -2,7 +2,11 @@ package com.example.ecommerce.service.impl;
 
 import com.example.ecommerce.dto.request.ProductRequestDTO;
 import com.example.ecommerce.dto.response.ProductResponseDTO;
+import com.example.ecommerce.entity.Category;
 import com.example.ecommerce.entity.Product;
+import com.example.ecommerce.exception.BadRequestException;
+import com.example.ecommerce.exception.ResourceNotFoundException;
+import com.example.ecommerce.repository.CategoryRepository;
 import com.example.ecommerce.repository.ProductRepository;
 import com.example.ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +24,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO request) {
 
+        if (request.getPrice() < 0) {
+            throw new BadRequestException("Price cannot be negative");
+        }
+
+        if (request.getStockQuantity() < 0) {
+            throw new BadRequestException("Stock cannot be negative");
+        }
+
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
 
         Product product = new Product();
         product.setName(request.getName());
@@ -39,7 +52,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO getProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
 
         return mapToResponse(product);
     }

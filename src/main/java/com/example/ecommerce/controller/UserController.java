@@ -3,6 +3,7 @@ package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.request.UserRequestDTO;
 import com.example.ecommerce.dto.response.UserResponseDTO;
 import com.example.ecommerce.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(
-            @RequestBody UserRequestDTO request
+            @Valid @RequestBody UserRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(request));

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users/{userId}/cart")
+@RequestMapping("/api/cart")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -17,25 +17,21 @@ public class CartController {
 
     @PostMapping
     public ResponseEntity<CartResponseDTO> addToCart(
-            @PathVariable Long userId,
             @Valid @RequestBody AddToCartRequestDTO request
     ) {
-        return ResponseEntity.ok(cartService.addToCart(userId, request));
+        return ResponseEntity.ok(cartService.addToCart(request));
     }
 
     @GetMapping
-    public ResponseEntity<CartResponseDTO> getCart(
-            @PathVariable Long userId
-    ) {
-        return ResponseEntity.ok(cartService.getCart(userId));
+    public ResponseEntity<CartResponseDTO> getCart() {
+        return ResponseEntity.ok(cartService.getCart());
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> remove(
-            @PathVariable Long userId,
             @PathVariable Long productId
     ) {
-        cartService.removeFromCart(userId, productId);
+        cartService.removeFromCart(productId);
         return ResponseEntity.noContent().build();
     }
 }

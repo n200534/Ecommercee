@@ -5,9 +5,9 @@ import com.example.ecommerce.dto.response.CartResponseDTO;
 
 public interface CartService {
 
-    CartResponseDTO addToCart(Long userId, AddToCartRequestDTO request);
+    CartResponseDTO addToCart(AddToCartRequestDTO request);
 
-    CartResponseDTO getCart(Long userId);
+    CartResponseDTO getCart();
 
-    void removeFromCart(Long userId, Long productId);
+    void removeFromCart(Long productId);
 }

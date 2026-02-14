@@ -8,12 +8,14 @@ import com.example.ecommerce.exception.ResourceNotFoundException;
 import com.example.ecommerce.repository.CartRepository;
 import com.example.ecommerce.repository.OrderRepository;
 import com.example.ecommerce.repository.ProductRepository;
+import com.example.ecommerce.repository.UserRepository;
 import com.example.ecommerce.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import static com.example.ecommerce.security.SecurityUtils.getCurrentUserEmail;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +24,15 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
-    public OrderResponseDTO placeOrder(Long userId) {
-
-        Cart cart = cartRepository.findByUserId(userId)
+    public OrderResponseDTO placeOrder() {
+        String email = getCurrentUserEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         if (cart.getItems().isEmpty()) {
@@ -71,9 +76,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getUserOrders(Long userId) {
+    public List<OrderResponseDTO> getUserOrders() {
+        String email=getCurrentUserEmail();
 
-        return orderRepository.findByUserId(userId)
+        User user=userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return orderRepository.findByUserId(user.getId())
                 .stream()
                 .map(this::mapToResponse)
                 .toList();

@@ -16,6 +16,8 @@ import com.example.ecommerce.repository.UserRepository;
 import com.example.ecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import static com.example.ecommerce.security.SecurityUtils.getCurrentUserEmail;
+
 
 import java.util.List;
 
@@ -29,9 +31,11 @@ public class CartServiceImpl implements CartService {
     private final UserRepository userRepository;
 
     @Override
-    public CartResponseDTO addToCart(Long userId, AddToCartRequestDTO request) {
+    public CartResponseDTO addToCart(AddToCartRequestDTO request) {
 
-        User user = userRepository.findById(userId)
+        String email = getCurrentUserEmail();
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Product product = productRepository.findById(request.getProductId())
@@ -41,7 +45,7 @@ public class CartServiceImpl implements CartService {
             throw new BadRequestException("Not enough stock available");
         }
 
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setUser(user);
@@ -66,19 +70,27 @@ public class CartServiceImpl implements CartService {
         return buildCartResponse(cart);
     }
 
-    @Override
-    public CartResponseDTO getCart(Long userId) {
 
-        Cart cart = cartRepository.findByUserId(userId)
+    @Override
+    public CartResponseDTO getCart() {
+        String email = getCurrentUserEmail();
+        User user=userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         return buildCartResponse(cart);
     }
 
     @Override
-    public void removeFromCart(Long userId, Long productId) {
+    public void removeFromCart(Long productId) {
 
-        Cart cart = cartRepository.findByUserId(userId)
+        String email = getCurrentUserEmail();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         CartItem item = cartItemRepository
@@ -87,6 +99,7 @@ public class CartServiceImpl implements CartService {
 
         cartItemRepository.delete(item);
     }
+
 
     private CartResponseDTO buildCartResponse(Cart cart) {
 

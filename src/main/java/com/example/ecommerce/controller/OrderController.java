@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users/{userId}/orders")
+@RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -17,16 +17,16 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> placeOrder(
-            @PathVariable Long userId
+
     ) {
-        return ResponseEntity.ok(orderService.placeOrder(userId));
+        return ResponseEntity.ok(orderService.placeOrder());
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> getOrders(
-            @PathVariable Long userId
+
     ) {
-        return ResponseEntity.ok(orderService.getUserOrders(userId));
+        return ResponseEntity.ok(orderService.getUserOrders());
     }
 }
 

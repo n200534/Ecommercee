@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface OrderService {
 
-    OrderResponseDTO placeOrder(Long userId);
+    OrderResponseDTO placeOrder();
 
-    List<OrderResponseDTO> getUserOrders(Long userId);
+    List<OrderResponseDTO> getUserOrders();
 }
 

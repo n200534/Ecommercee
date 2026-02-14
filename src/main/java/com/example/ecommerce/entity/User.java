@@ -25,6 +25,10 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
